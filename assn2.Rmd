@@ -6,7 +6,7 @@ date: '2022-10-25'
 
 ```{r setup, include=FALSE}
 library(pacman)
-p_load(pacman, devtools, bookdown, tidyverse, ggforce, flextable, latex2exp, png, magick, metafor, rmcorr, readr)
+p_load(pacman, devtools, bookdown, tidyverse, ggforce, flextable, latex2exp, png, magick, metafor, rmcorr, readr, forestplot)
 install_github("daniel1noble/orchaRd", force = TRUE)
 devtools::install_github("daniel1noble/orchaRd", force = TRUE)
 library(orchaRd)
@@ -34,6 +34,7 @@ metadata <- merge.data.frame(entry, read.csv('data/ocean_meta_data.csv'), all = 
 
 ```{r}
 metadata <- escalc(measure = 'ROMC', m1i = ctrl.mean, m2i = oa.mean, sd1i = ctrl.sd, sd2i = oa.sd, ri = rep(0, 826), ni = Average.n, data = metadata, var.names = c('effect.size', 'sampling.variance'))
+metadata = na.omit(metadata)
 ```
 ```{r}
 MAM <- rma.mv(data = metadata, yi = effect.size, V = sampling.variance, random = list( ~1 | Study, ~1 | Behavioural.metric))
@@ -43,5 +44,22 @@ MAM
 predict(MAM, transf = "transf.ztor")
 
 i2 <- orchaRd::i2_ml(MAM)
-
+i2
+```
+```{r}
+orchard_plot(data = metadata, object = MAM, group = 'Study', xlab = 'plplpl', mod = 1, angle = 0)
+```
+```{r}
+funnel(x = metadata$effect.size, vi = metadata$sampling.variance, yaxis = 'vi',
+    digits = 2, level = c(0.1, 0.05, 0.01), shade = c("white", "gray55", "gray 75"),
+    las = 1, atransf = tanh, legend = TRUE)
+```
+```{r}
+ggplot(metadata, aes(y = effect.size, x = Year..online., size = sampling.variance)) + geom_point(alpha = 0.3) +
+    geom_smooth(method = lm, col = "red", show.legend = FALSE) + labs(x = "Publication Year",
+    y = "Fisher's Z-transformed Correlation Coefficient (Zr)", size = "variance")
+```
+```{r}
+MAMlag <- rma.mv(effect.size ~ Year..online., V = sampling.variance, random = list(~1 | Study, ~1 | Behavioural.metric), test = "t", dfs = "contain", data = metadata)
+summary(MAMlag)
 ```
