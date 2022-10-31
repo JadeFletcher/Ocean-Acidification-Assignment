@@ -11,18 +11,20 @@ install_github("daniel1noble/orchaRd", force = TRUE)
 devtools::install_github("daniel1noble/orchaRd", force = TRUE)
 library(orchaRd)
 ```
-
+#### Repo Link: https://github.com/JadeFletcher/Ocean-Acidification-Assignment
 ## Transforming Clark et. al Data
 ```{r clean_data_to_merge,warning=FALSE, error=FALSE, message=FALSE}
-clark <- read_csv('data/OA_activitydat_20190302_BIOL3207 (1).csv')
+clark <- read_csv('data/OA_activitydat_20190302_BIOL3207 (1).csv') #Load Clark Paper
 clark <- na.omit(clark)
-clark <- clark %>% select(-loc, -comment, -...1)
+clark <- clark %>% select(-loc, -comment, -...1) # Omit unnecessary cols
 summary_clark <- clark %>% group_by(species, treatment, size) %>% summarise(across(c(activity), funs(mean, se=sd(.)/sqrt(n()), n())))
 
+# Create cols similar to metadata
 CO2 <- summary_clark[summary_clark$treatment == 'CO2',]
 control <- summary_clark[summary_clark$treatment == 'control',]
 to_meta <- cbind(CO2, control)%>% select(-7, -2, -8, -9) %>% rename(Species = species...1, ctrl.n = activity_n...12, ctrl.sd = activity_se...11, ctrl.mean = activity_mean...10, oa.n = activity_n...6, oa.sd = activity_se...5, oa.mean = activity_mean...4, 'Life stage' = size...3)
 
+#rename variables in line with metadata
 to_meta$`Life stage`[to_meta$`Life stage`=='big'] <- 'Adult'
 to_meta$`Life stage`[to_meta$`Life stage`=='small'] <- 'Juvenile'
 
@@ -31,8 +33,9 @@ head(to_meta)
 
 ## Merging to metadata
 ```{r merge_data,warning=FALSE, error=FALSE, message=FALSE}
-entry <- cbind(to_meta, read_csv('data/clark_paper_data.csv')) %>% rename(Life.stage = 'Life stage', Year..online. = 'Year (online)',Year..print. = 'Year (print)', Pub.year.IF = 'Pub year IF', X2017.IF = '2017 IF', Average.n = 'Average n', Effect.type = 'Effect type', Climate..FishBase. = 'Climate (FishBase)', Env.cue.stimulus. = 'Env cue/stimulus?', Behavioural.metric = 'Behavioural metric', Cue.stimulus.type = 'Cue/stimulus type') %>% select(-23)
+entry <- cbind(to_meta, read_csv('data/clark_paper_data.csv')) %>% rename(Life.stage = 'Life stage', Year..online. = 'Year (online)',Year..print. = 'Year (print)', Pub.year.IF = 'Pub year IF', X2017.IF = '2017 IF', Average.n = 'Average n', Effect.type = 'Effect type', Climate..FishBase. = 'Climate (FishBase)', Env.cue.stimulus. = 'Env cue/stimulus?', Behavioural.metric = 'Behavioural metric', Cue.stimulus.type = 'Cue/stimulus type') %>% select(-23) #Creating consistent/callable column names
 
+# Merging
 metadata <- merge.data.frame(entry, read.csv('data/ocean_meta_data.csv'), all = TRUE)
 head(metadata)
 ```
@@ -60,22 +63,21 @@ predict(MAM)
 ```
 Looking further at heterogeneity estimates, the total I squared value indicates perfectly heterogenous effect size data, where sampling bias does not contribute to the effect variation. Furthermore, differences between studies only contributes 12% of the variation. Variation is greatest due to the behavioural metric used, contributing to 88% of variation. These startistics can all be visualised together in the below `plot`
 
-```{r forest_plot,warning=FALSE, error=FALSE, message=FALSE, fig.cap= 'Figure 1. Forest Plot of mean Effect size between response variables under control and ocean acidification conditions. k = number of effect sizes followed by number of studies in brackets. 95% CI indicated by solid black line. Prediction valuenot visile due to narrow range on small (near-zero) values. Mean estimate indicated by black circle.}
-orchard_plot(data = metadata, object = MAM, group = 'Study', xlab = 'Mean Effect Size', mod = 1, angle = 0)
+```{r forest_plot,warning=FALSE, error=FALSE, message=FALSE, fig.cap= 'Figure 1. Forest Plot of mean Effect size between response variables under control and ocean acidification conditions. k = number of effect sizes followed by number of studies in brackets. 95% CI indicated by solid black line. Prediction value not visible due to narrow range on small (near-zero) values. Mean estimate indicated by black circle.'}
+orchard_plot(data = metadata, object = MAM, group = 'Study', xlab = 'Mean Effect Size', mod = 1, angle = 0) #Generate orchard plot
 ```
 
 ## Examining Publication Bias
 ```{r funnel_plot,warning=FALSE, error=FALSE, message=FALSE, fig.cap= 'Figure 2. Funnel plot displaying effect size as a function of sampling variance. Shaded regions indicate p-values as per the legend displayed on the chart.'}
 funnel(x = metadata$effect.size, vi = metadata$sampling.variance, yaxis = 'vi',
     digits = 2, level = c(0.1, 0.05, 0.01), shade = c("white", "gray55", "gray 75"),
-    las = 1, atransf = tanh, legend = TRUE)
-?funnel
+    las = 1, atransf = tanh, legend = TRUE) #generate funnel plot
 ```
 
 ```{r lag_plot,warning=FALSE, error=FALSE, message=FALSE, fig.cap= 'Figure 3. Plot of Effect size as a function of online publication year. Points scaled with respect to sampling variance.'}
 ggplot(metadata, aes(y = effect.size, x = Year..online., size = sampling.variance)) + geom_point(alpha = 0.3) +
     geom_smooth(method = lm, col = "red", show.legend = FALSE) + labs(x = "Publication Year",
-    y = "lnRR Effect Size", size = "Sampling Variance")
+    y = "lnRR Effect Size", size = "Sampling Variance") # Plot time-lag
 ```
 Generating a funnel-plot from the effect size as a function on sampling variance is shown in figure 2. Although the typical dome-shape is produced, very few of the studies are displayed on the plot.Here is unclear whether publication bias has impacted the result. 
 
@@ -83,9 +85,9 @@ Continuing on to look at time-lag bias, Visual inspection of the trend in figure
 
 ```{r model_lag_filedrawer,warning=FALSE, error=FALSE, message=FALSE}
 MAMlag <- rma.mv(effect.size ~ Year..online., V = sampling.variance, random = list(~1 | Study, ~1 | Behavioural.metric), test = "t", dfs = "contain", data = metadata)
-summary(MAMlag)
+summary(MAMlag) #Modelling time-lag
 
-MAMfile <- metareg_time <- rma.mv(effect.size ~ Year..online. + sampling.variance, V = sampling.variance, random = list(~1 | Study, ~1 | Behavioural.metric),test = "t", dfs = "contain", data = metadata)
+MAMfile <- metareg_time <- rma.mv(effect.size ~ Year..online. + sampling.variance, V = sampling.variance, random = list(~1 | Study, ~1 | Behavioural.metric),test = "t", dfs = "contain", data = metadata) #Modelling lag and file-drawer effect
 
 MAMlag
 r2_ml(MAMlag)
