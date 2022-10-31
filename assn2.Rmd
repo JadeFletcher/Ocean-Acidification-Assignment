@@ -3,16 +3,17 @@ title: "Assn2"
 output: html_document
 date: '2022-10-25'
 ---
-
-```{r setup, include=FALSE}
+## Setup
+```{r setup, results='hide', warning=FALSE, error=FALSE, message=FALSE}
 library(pacman)
-p_load(pacman, devtools, bookdown, tidyverse, ggforce, flextable, latex2exp, png, magick, metafor, rmcorr, readr, forestplot)
+p_load(pacman, devtools, bookdown, tidyverse, ggforce, flextable, latex2exp, png, magick, metafor, rmcorr, readr, knitr)
 install_github("daniel1noble/orchaRd", force = TRUE)
 devtools::install_github("daniel1noble/orchaRd", force = TRUE)
 library(orchaRd)
 ```
 
-```{r}
+## Transforming Clark et. al Data
+```{r clean_data_to_merge,warning=FALSE, error=FALSE, message=FALSE}
 clark <- read_csv('data/OA_activitydat_20190302_BIOL3207 (1).csv')
 clark <- na.omit(clark)
 clark <- clark %>% select(-loc, -comment, -...1)
@@ -24,47 +25,76 @@ to_meta <- cbind(CO2, control)%>% select(-7, -2, -8, -9) %>% rename(Species = sp
 
 to_meta$`Life stage`[to_meta$`Life stage`=='big'] <- 'Adult'
 to_meta$`Life stage`[to_meta$`Life stage`=='small'] <- 'Juvenile'
+
+head(to_meta)
 ```
-```{r}
+
+## Merging to metadata
+```{r merge_data,warning=FALSE, error=FALSE, message=FALSE}
 entry <- cbind(to_meta, read_csv('data/clark_paper_data.csv')) %>% rename(Life.stage = 'Life stage', Year..online. = 'Year (online)',Year..print. = 'Year (print)', Pub.year.IF = 'Pub year IF', X2017.IF = '2017 IF', Average.n = 'Average n', Effect.type = 'Effect type', Climate..FishBase. = 'Climate (FishBase)', Env.cue.stimulus. = 'Env cue/stimulus?', Behavioural.metric = 'Behavioural metric', Cue.stimulus.type = 'Cue/stimulus type') %>% select(-23)
 
 metadata <- merge.data.frame(entry, read.csv('data/ocean_meta_data.csv'), all = TRUE)
-
+head(metadata)
 ```
 
-```{r}
+## Adding lnRR Effect Size
+```{r lnRR_effect_size,warning=FALSE, error=FALSE, message=FALSE}
 metadata <- escalc(measure = 'ROMC', m1i = ctrl.mean, m2i = oa.mean, sd1i = ctrl.sd, sd2i = oa.sd, ri = rep(0, 826), ni = Average.n, data = metadata, var.names = c('effect.size', 'sampling.variance'))
 metadata = na.omit(metadata)
+
+head(metadata)
 ```
-```{r}
+
+
+## Assessing Overall Effect Size
+```{r samp_var_model,warning=FALSE, error=FALSE, message=FALSE}
 MAM <- rma.mv(data = metadata, yi = effect.size, V = sampling.variance, random = list( ~1 | Study, ~1 | Behavioural.metric))
 MAM
-```
-```{r}
 predict(MAM, transf = "transf.ztor")
-
+```
+From the model above we have obtained an overall meta analytic mean of -0.166. From this value alone we could assume that the overall effect size is negative, a reduction in the mean of the response variable. Looking further, a p-value of 0.13 was returned, so this result was most likely not significant. This is further supported by the 95% confidence intervals, with a range of -0.38 to 0.047.These bounds mean that in repetitions of these experiments, 95% of cases would have the mean effect size between these values. As they span over zero, there is very little certainty that the effect is at all directional. 
+```{r eff_size_hetero,warning=FALSE, error=FALSE, message=FALSE}
 i2 <- orchaRd::i2_ml(MAM)
 i2
+predict(MAM)
 ```
-```{r}
-orchard_plot(data = metadata, object = MAM, group = 'Study', xlab = 'plplpl', mod = 1, angle = 0)
+Looking further at heterogeneity estimates, the total I squared value indicates perfectly heterogenous effect size data, where sampling bias does not contribute to the effect variation. Furthermore, differences between studies only contributes 12% of the variation. Variation is greatest due to the behavioural metric used, contributing to 88% of variation. These startistics can all be visualised together in the below `plot`
+
+```{r forest_plot,warning=FALSE, error=FALSE, message=FALSE, fig.cap= 'Figure 1. Forest Plot of mean Effect size between response variables under control and ocean acidification conditions. k = number of effect sizes followed by number of studies in brackets. 95% CI indicated by solid black line. Prediction valuenot visile due to narrow range on small (near-zero) values. Mean estimate indicated by black circle.}
+orchard_plot(data = metadata, object = MAM, group = 'Study', xlab = 'Mean Effect Size', mod = 1, angle = 0)
 ```
-```{r}
+
+## Examining Publication Bias
+```{r funnel_plot,warning=FALSE, error=FALSE, message=FALSE, fig.cap= 'Figure 2. Funnel plot displaying effect size as a function of sampling variance. Shaded regions indicate p-values as per the legend displayed on the chart.'}
 funnel(x = metadata$effect.size, vi = metadata$sampling.variance, yaxis = 'vi',
     digits = 2, level = c(0.1, 0.05, 0.01), shade = c("white", "gray55", "gray 75"),
     las = 1, atransf = tanh, legend = TRUE)
+?funnel
 ```
-```{r}
+
+```{r lag_plot,warning=FALSE, error=FALSE, message=FALSE, fig.cap= 'Figure 3. Plot of Effect size as a function of online publication year. Points scaled with respect to sampling variance.'}
 ggplot(metadata, aes(y = effect.size, x = Year..online., size = sampling.variance)) + geom_point(alpha = 0.3) +
     geom_smooth(method = lm, col = "red", show.legend = FALSE) + labs(x = "Publication Year",
-    y = "Fisher's Z-transformed Correlation Coefficient (Zr)", size = "variance")
+    y = "lnRR Effect Size", size = "Sampling Variance")
 ```
-```{r}
+Generating a funnel-plot from the effect size as a function on sampling variance is shown in figure 2. Although the typical dome-shape is produced, very few of the studies are displayed on the plot.Here is unclear whether publication bias has impacted the result. 
+
+Continuing on to look at time-lag bias, Visual inspection of the trend in figure 3 indicates potentially some positive relationship with year, though the dpread of effect size does seem to vary somewhat randomly by year. Metaregression assists to further clarify the visual assessment.
+
+```{r model_lag_filedrawer,warning=FALSE, error=FALSE, message=FALSE}
 MAMlag <- rma.mv(effect.size ~ Year..online., V = sampling.variance, random = list(~1 | Study, ~1 | Behavioural.metric), test = "t", dfs = "contain", data = metadata)
 summary(MAMlag)
 
 MAMfile <- metareg_time <- rma.mv(effect.size ~ Year..online. + sampling.variance, V = sampling.variance, random = list(~1 | Study, ~1 | Behavioural.metric),test = "t", dfs = "contain", data = metadata)
 
 MAMlag
-MAMfile
+r2_ml(MAMlag)
 ```
+By again applying the Meta-Analysis model we see that time-lag does not appear to have a significant impact of effect size over the years and would only account for ~1% of variation if it did.
+
+```{r}
+MAMfile
+r2_ml(MAMfile)
+```
+Including sampling variance to account for file-drawer effects yielded a similar result, suggesting time-lag and file-drawer biases in the data is unlikely.
+
