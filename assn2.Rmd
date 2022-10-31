@@ -1,5 +1,5 @@
 ---
-title: "Assn2"
+title: "3207_Assignment2"
 output: html_document
 date: '2022-10-25'
 ---
