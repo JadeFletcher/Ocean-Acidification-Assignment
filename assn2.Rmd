@@ -10,7 +10,7 @@ p_load(bookdown, tidyverse, ggforce, flextable, latex2exp, png, magick)
 ```
 
 ```{r}
-clark <- read_csv('OA_activitydat_20190302_BIOL3207 (1).csv')
+clark <- read_csv('data/OA_activitydat_20190302_BIOL3207 (1).csv')
 clark <- na.omit(clark)
 clark <- clark %>% select(-loc, -comment, -...1)
 summary_clark <- clark %>% group_by(species, treatment, size) %>% summarise(across(c(activity), funs(mean, se=sd(.)/sqrt(n()), n())))
@@ -23,7 +23,13 @@ to_meta$`Life stage`[to_meta$`Life stage`=='big'] <- 'Adult'
 to_meta$`Life stage`[to_meta$`Life stage`=='small'] <- 'Juvenile'
 ```
 ```{r}
-entry <- cbind(to_meta, read_csv('clark_paper_data.csv')) %>% rename(Life.stage = 'Life stage', Year..online. = 'Year (online)',Year..print. = 'Year (print)', Pub.year.IF = 'Pub year IF', X2017.IF = '2017 IF', Average.n = 'Average n', Effect.type = 'Effect type', Climate..FishBase. = 'Climate (FishBase)', Env.cue.stimulus. = 'Env cue/stimulus?', Behavioural.metric = 'Behavioural metric', Cue.stimulus.type = 'Cue/stimulus type') %>% select(-23)
+entry <- cbind(to_meta, read_csv('data/clark_paper_data.csv')) %>% rename(Life.stage = 'Life stage', Year..online. = 'Year (online)',Year..print. = 'Year (print)', Pub.year.IF = 'Pub year IF', X2017.IF = '2017 IF', Average.n = 'Average n', Effect.type = 'Effect type', Climate..FishBase. = 'Climate (FishBase)', Env.cue.stimulus. = 'Env cue/stimulus?', Behavioural.metric = 'Behavioural metric', Cue.stimulus.type = 'Cue/stimulus type') %>% select(-23)
 
-metadata <- merge.data.frame(entry, read.csv('ocean_meta_data.csv'), all = TRUE)
+metadata <- merge.data.frame(entry, read.csv('data/ocean_meta_data.csv'), all = TRUE)
 ```
+
+```{r}
+
+
+```
+

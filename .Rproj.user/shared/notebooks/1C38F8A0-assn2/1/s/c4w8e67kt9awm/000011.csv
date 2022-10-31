@@ -1,0 +1,14 @@
+"0","entry <- cbind(to_meta, read_csv('data/clark_paper_data.csv')) %>% rename(Life.stage = 'Life stage', Year..online. = 'Year (online)',Year..print. = 'Year (print)', Pub.year.IF = 'Pub year IF', X2017.IF = '2017 IF', Average.n = 'Average n', Effect.type = 'Effect type', Climate..FishBase. = 'Climate (FishBase)', Env.cue.stimulus. = 'Env cue/stimulus?', Behavioural.metric = 'Behavioural metric', Cue.stimulus.type = 'Cue/stimulus type') %>% select(-23)"
+"1","[1mRows: [22m[34m1[39m [1mColumns: [22m[34m15[39m
+"
+"1","[36m--[39m [1mColumn specification[22m [36m---------------------------------------------------------------[39m
+[1mDelimiter:[22m "",""
+[31mchr[39m (9): Study, Authors, Title, Journal, Effect type, Climate (FishBase), Env cue/s...
+[32mdbl[39m (5): Year (online), Year (print), Pub year IF, 2017 IF, Average n
+[33mlgl[39m (1): Cue/stimulus type
+"
+"1","
+[36mi[39m Use `spec()` to retrieve the full column specification for this data.
+[36mi[39m Specify the column types or set `show_col_types = FALSE` to quiet this message.
+"
+"0","metadata <- merge.data.frame(entry, read.csv('data/ocean_meta_data.csv'), all = TRUE)"
