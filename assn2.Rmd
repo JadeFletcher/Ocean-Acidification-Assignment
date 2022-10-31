@@ -62,4 +62,9 @@ ggplot(metadata, aes(y = effect.size, x = Year..online., size = sampling.varianc
 ```{r}
 MAMlag <- rma.mv(effect.size ~ Year..online., V = sampling.variance, random = list(~1 | Study, ~1 | Behavioural.metric), test = "t", dfs = "contain", data = metadata)
 summary(MAMlag)
+
+MAMfile <- metareg_time <- rma.mv(effect.size ~ Year..online. + sampling.variance, V = sampling.variance, random = list(~1 | Study, ~1 | Behavioural.metric),test = "t", dfs = "contain", data = metadata)
+
+MAMlag
+MAMfile
 ```
