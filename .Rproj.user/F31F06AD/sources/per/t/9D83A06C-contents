@@ -6,7 +6,7 @@ date: '2022-10-25'
 
 ```{r setup, include=FALSE}
 library(pacman)
-p_load(bookdown, tidyverse, ggforce, flextable, latex2exp, png, magick, metafor)
+install.packages('devtools)
 ```
 
 ```{r}
@@ -30,7 +30,7 @@ metadata <- merge.data.frame(entry, read.csv('data/ocean_meta_data.csv'), all = 
 ```
 
 ```{r}
-metadata <- escalc(measure = 'ROMC', m1i = ctrl.mean, m2i = oa.mean, sd1i = ctrl.sd, sd2i = oa.sd, ri = rep(0.5, 826), ni = Average.n, data = metadata, var.names = c('effect.size', 'sampling.variance'))
+metadata <- escalc(measure = 'ROMC', m1i = ctrl.mean, m2i = oa.mean, sd1i = ctrl.sd, sd2i = oa.sd, ri = rep(0, 826), ni = Average.n, data = metadata, var.names = c('effect.size', 'sampling.variance'))
 ```
 ```{r}
 MAM <- rma.mv(data = metadata, yi = effect.size, V = sampling.variance, random = list( ~1 | Study, ~1 | Behavioural.metric))

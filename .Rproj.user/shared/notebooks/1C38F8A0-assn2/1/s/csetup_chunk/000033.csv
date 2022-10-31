@@ -1,0 +1,6 @@
+"0","devtools::install_github(repo = ""r-lib/devtools"",
+                         dependencies = TRUE,
+                         upgrade = TRUE)
+"
+"2","Error in loadNamespace(x) : there is no package called ‘devtools’
+"
