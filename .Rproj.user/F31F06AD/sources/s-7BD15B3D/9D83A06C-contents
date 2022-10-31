@@ -6,7 +6,7 @@ date: '2022-10-25'
 
 ```{r setup, include=FALSE}
 library(pacman)
-p_load(bookdown, tidyverse, ggforce, flextable, latex2exp, png, magick)
+p_load(bookdown, tidyverse, ggforce, flextable, latex2exp, png, magick, metafor)
 ```
 
 ```{r}
@@ -26,10 +26,18 @@ to_meta$`Life stage`[to_meta$`Life stage`=='small'] <- 'Juvenile'
 entry <- cbind(to_meta, read_csv('data/clark_paper_data.csv')) %>% rename(Life.stage = 'Life stage', Year..online. = 'Year (online)',Year..print. = 'Year (print)', Pub.year.IF = 'Pub year IF', X2017.IF = '2017 IF', Average.n = 'Average n', Effect.type = 'Effect type', Climate..FishBase. = 'Climate (FishBase)', Env.cue.stimulus. = 'Env cue/stimulus?', Behavioural.metric = 'Behavioural metric', Cue.stimulus.type = 'Cue/stimulus type') %>% select(-23)
 
 metadata <- merge.data.frame(entry, read.csv('data/ocean_meta_data.csv'), all = TRUE)
+
 ```
 
 ```{r}
-
-
+metadata <- escalc(measure = 'ROMC', m1i = ctrl.mean, m2i = oa.mean, sd1i = ctrl.sd, sd2i = oa.sd, ri = rep(0.5, 826), ni = Average.n, data = metadata, var.names = c('effect.size', 'sampling.variance'))
 ```
+```{r}
+MAM <- rma.mv(data = metadata, yi = effect.size, V = sampling.variance, random = list( ~1 | Study, ~1 | Behavioural.metric))
+MAM
+```
+```{r}
+predict(MAM, transf = "transf.ztor")
 
+?predict.rma
+```

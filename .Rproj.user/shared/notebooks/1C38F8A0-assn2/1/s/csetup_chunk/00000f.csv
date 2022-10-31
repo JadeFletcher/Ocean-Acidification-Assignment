@@ -1,2 +1,2 @@
 "0","library(pacman)"
-"0","p_load(bookdown, tidyverse, ggforce, flextable, latex2exp, png, magick)"
+"0","p_load(bookdown, tidyverse, ggforce, flextable, latex2exp, png, magick, metafor)"

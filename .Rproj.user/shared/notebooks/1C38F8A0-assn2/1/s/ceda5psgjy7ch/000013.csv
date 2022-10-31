@@ -1,0 +1,4 @@
+"0","metadata <- escalc(measure = 'ROMC', m1i = ctrl.mean, m2i = oa.mean, sd1i = ctrl.sd, sd2i = oa.sd, ri = rep(0.5, 826), ni = Average.n, data = metadata, var.names = c('effect.size', 'sampling.variance'))"
+"2","Warning in log(m1i/m2i) :"
+"2"," NaNs produced
+"
