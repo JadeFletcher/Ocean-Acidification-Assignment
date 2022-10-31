@@ -1,0 +1,47 @@
+"0","updateR()
+"
+"1","Installing the newest version of R,
+ please wait for the installer file to be download and executed.
+ Be sure to click 'next' as needed...
+"
+"2","trying URL 'https://cran.rstudio.com/bin/windows/base/R-4.2.1-win.exe'
+"
+"2","Content type 'application/x-msdownload'"
+"2"," length 82615168 bytes (78.8 MB)
+"
+"2","downloaded 78.8 MB
+
+"
+"1","
+The file was downloaded successfully into:
+"
+"1"," "
+"1","C:\Users\jade_\AppData\Local\Temp\RtmpsVKxQE/R-4.2.1-win.exe"
+"1"," "
+"1","
+"
+"1","
+Running the installer now...
+"
+"2","Warning in shell(install_cmd, wait = wait, ...) :"
+"2","
+ "
+"2"," 'C:\Users\jade_\AppData\Local\Temp\RtmpsVKxQE/R-4.2.1-win.exe' execution failed with error code 2
+"
+"1","
+Installation status: "
+"1"," "
+"1","FALSE"
+"1"," "
+"1",". Removing the file:
+"
+"1"," "
+"1","C:\Users\jade_\AppData\Local\Temp\RtmpsVKxQE/R-4.2.1-win.exe"
+"1"," "
+"1","
+ (In the future, you may keep the file by setting keep_install_file=TRUE) 
+"
+"1","[1]"
+"1"," FALSE"
+"1","
+"

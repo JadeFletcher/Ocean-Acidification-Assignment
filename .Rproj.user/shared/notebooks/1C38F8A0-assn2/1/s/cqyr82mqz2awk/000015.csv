@@ -1,10 +1,10 @@
 "0","clark <- read_csv('data/OA_activitydat_20190302_BIOL3207 (1).csv')"
 "1","[38;5;232mNew names:
-[36m*[38;5;232m [38;5;232m``[38;5;232m -> [38;5;232m`...1`[38;5;232m[39m
+[36m*[38;5;232m `` -> `...1`[39m
 "
 "1","[1mRows: [22m[34m589[39m [1mColumns: [22m[34m9[39m
 "
-"1","[36m--[39m [1mColumn specification[22m [36m---------------------------------------------------------------[39m
+"1","[36m--[39m [1mColumn specification[22m [36m-----------------------------------------------------------------[39m
 [1mDelimiter:[22m "",""
 [31mchr[39m (5): loc, species, treatment, size, comment
 [32mdbl[39m (4): ...1, animal_id, sl, activity
@@ -23,18 +23,18 @@
 "0","control <- summary_clark[summary_clark$treatment == 'control',]"
 "0","to_meta <- cbind(CO2, control)%>% select(-7, -2, -8, -9) %>% rename(Species = species...1, ctrl.n = activity_n...12, ctrl.sd = activity_se...11, ctrl.mean = activity_mean...10, oa.n = activity_n...6, oa.sd = activity_se...5, oa.mean = activity_mean...4, 'Life stage' = size...3)"
 "1","[38;5;232mNew names:
-[36m*[38;5;232m [38;5;232m`species`[38;5;232m -> [38;5;232m`species...1`[38;5;232m
-[36m*[38;5;232m [38;5;232m`treatment`[38;5;232m -> [38;5;232m`treatment...2`[38;5;232m
-[36m*[38;5;232m [38;5;232m`size`[38;5;232m -> [38;5;232m`size...3`[38;5;232m
-[36m*[38;5;232m [38;5;232m`activity_mean`[38;5;232m -> [38;5;232m`activity_mean...4`[38;5;232m
-[36m*[38;5;232m [38;5;232m`activity_se`[38;5;232m -> [38;5;232m`activity_se...5`[38;5;232m
-[36m*[38;5;232m [38;5;232m`activity_n`[38;5;232m -> [38;5;232m`activity_n...6`[38;5;232m
-[36m*[38;5;232m [38;5;232m`species`[38;5;232m -> [38;5;232m`species...7`[38;5;232m
-[36m*[38;5;232m [38;5;232m`treatment`[38;5;232m -> [38;5;232m`treatment...8`[38;5;232m
-[36m*[38;5;232m [38;5;232m`size`[38;5;232m -> [38;5;232m`size...9`[38;5;232m
-[36m*[38;5;232m [38;5;232m`activity_mean`[38;5;232m -> [38;5;232m`activity_mean...10`[38;5;232m
-[36m*[38;5;232m [38;5;232m`activity_se`[38;5;232m -> [38;5;232m`activity_se...11`[38;5;232m
-[36m*[38;5;232m [38;5;232m`activity_n`[38;5;232m -> [38;5;232m`activity_n...12`[38;5;232m[39m
+[36m*[38;5;232m `species` -> `species...1`
+[36m*[38;5;232m `treatment` -> `treatment...2`
+[36m*[38;5;232m `size` -> `size...3`
+[36m*[38;5;232m `activity_mean` -> `activity_mean...4`
+[36m*[38;5;232m `activity_se` -> `activity_se...5`
+[36m*[38;5;232m `activity_n` -> `activity_n...6`
+[36m*[38;5;232m `species` -> `species...7`
+[36m*[38;5;232m `treatment` -> `treatment...8`
+[36m*[38;5;232m `size` -> `size...9`
+[36m*[38;5;232m `activity_mean` -> `activity_mean...10`
+[36m*[38;5;232m `activity_se` -> `activity_se...11`
+[36m*[38;5;232m `activity_n` -> `activity_n...12`[39m
 "
 "0","to_meta$`Life stage`[to_meta$`Life stage`=='big'] <- 'Adult'"
 "0","to_meta$`Life stage`[to_meta$`Life stage`=='small'] <- 'Juvenile'"

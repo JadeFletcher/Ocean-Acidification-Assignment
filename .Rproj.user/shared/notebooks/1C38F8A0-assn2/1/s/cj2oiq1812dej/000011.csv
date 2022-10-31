@@ -1,3 +1,4 @@
-"0","predict(MAM, transf = ""transf.ztor"")"
-"1","
+"0","i2 <- orchaRd::i2_ml(MLMA)
+"
+"2","Error in loadNamespace(x) : there is no package called ‘orchaRd’
 "

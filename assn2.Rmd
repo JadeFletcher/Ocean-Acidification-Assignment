@@ -6,7 +6,11 @@ date: '2022-10-25'
 
 ```{r setup, include=FALSE}
 library(pacman)
-install.packages('devtools)
+p_load(devtools, bookdown, tidyverse, ggforce, flextable, latex2exp, png, magick, metafor, rmcorr, readr)
+install_github("daniel1noble/orchaRd", force = TRUE)
+devtools::install_github("daniel1noble/orchaRd", force = TRUE)
+library(orchaRd)
+updateR()
 ```
 
 ```{r}
@@ -39,5 +43,6 @@ MAM
 ```{r}
 predict(MAM, transf = "transf.ztor")
 
-?predict.rma
+i2 <- orchaRd::i2_ml(MLMA)
+
 ```
