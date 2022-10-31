@@ -16,3 +16,4 @@ Investigate metadata for trends in lnRR effect size and sampling variance
 Investigate metadata for publication biases including time-lag and file-drawer
 Structure code for knitting to .html file. Figure captions, check inline code
 Tidy code, add comments. Delete commented out / non-essential code.
+ 
